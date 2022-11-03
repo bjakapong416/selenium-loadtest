@@ -3,6 +3,9 @@ from selenium.webdriver.chrome.options import Options
 import threading
 from time import sleep
 from selenium.webdriver.common.keys import Keys
+import time, os
+from multiprocessing import Pool, TimeoutError
+from threading import Thread, Barrier
 
 
 chrome_options = Options()
@@ -22,14 +25,16 @@ username = "vam01"
 password = "test01"
 
 links = ["https://vxnat.vamstack.com/vxnat"]
-handles = drivers.window_handles
+# handles = drivers.window_handles
 
 
 def open_page(url, tab_index):
+# def open_page(tab_index):
     # drivers.switch_to.window(handles[-1])
 
     if tab_index == 0:
         drivers.get(url)
+
         # drivers.get(start_url)
         # find username/email field and send the username itself to the input field
         drivers.find_element("name", "username").send_keys(username)
@@ -37,14 +42,13 @@ def open_page(url, tab_index):
         drivers.find_element("name", "password").send_keys(password)
         # click login button
         drivers.find_element("name", "login").click()
-        sleep(1)
+
     else:
 
         # Create New tab
         drivers.execute_script("window.open('');")
         # Switch to the new window
         drivers.switch_to.window(drivers.window_handles[tab_index])
-
         drivers.get(url)
         # drivers.get(start_url)
         # find username/email field and send the username itself to the input field
@@ -53,13 +57,12 @@ def open_page(url, tab_index):
         drivers.find_element("name", "password").send_keys(password)
         # click login button
         drivers.find_element("name", "login").click()
-        sleep(1)
-
     return
 
 
+
 all_threads = []
-for i in range(0, 2):
+for i in range(0, 5):
     current_thread = threading.Thread(target=open_page, args=(links[0], i,))
     all_threads.append(current_thread)
     current_thread.start()
