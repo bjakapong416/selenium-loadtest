@@ -6,11 +6,23 @@ from time import sleep, time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
+import argparse
+import xlsxwriter
+
 # from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 # VXNAT
 username = "vam01"
 password = "test01"
-num_thread = 10000
+num_thread = 1000
+
+ap = argparse.ArgumentParser()
+ap.add_argument("-x", "--xlsx", required=True,
+	help="output xlsx")
+args = vars(ap.parse_args())
+
+
+workbook = xlsxwriter.Workbook(args["xlsx"])
+worksheet = workbook.add_worksheet()
 
 # def page_is_loaded(drivers):
 #     print("in page_is_loaded()")
@@ -21,6 +33,7 @@ def open_page(url, number):
     # drivers.switch_to.window(handles[-1])
 
     # if tab_index == 0:
+    
 
     chrome_options = Options()
     #chrome_options.add_argument("--disable-extensions")
@@ -45,7 +58,8 @@ def open_page(url, number):
     #     password = 'vamsuperadmin'
 
     # print(username, password)
-    print("start time and thread num: ", number, time() )
+    start_thread = time()
+    # print("start time and thread num: ", number, time() )
     drivers.find_element("name", "username").send_keys(username)
     # print(1)
     # find password input field and insert password as well
@@ -82,6 +96,12 @@ def open_page(url, number):
     #     # click login button
     #     drivers.find_element("name", "login").click()
     drivers.quit()
+    end_thread = time()
+    end_thread_time = end_thread - start_thread
+
+    worksheet.write(f'A{number}', number)
+    worksheet.write(f'B{number}', end_thread_time)
+
     return
 
 
@@ -105,6 +125,7 @@ if __name__ == "__main__":
     with ThreadPoolExecutor() as executor:
         for number in range(num_thread):
             print("thread nums:", number)
+            number = number + 1
             futures.append(
                 # executor.submit(run_process, output_filename, headless)
                 executor.submit(open_page, url, number)
@@ -115,3 +136,5 @@ if __name__ == "__main__":
     end_time = time()
     elapsed_time = end_time - start_time
     print(f"Elapsed run time: {elapsed_time} seconds")
+    print("add to xlsx sucessful")
+    workbook.close()
