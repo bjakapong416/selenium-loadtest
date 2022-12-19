@@ -11,8 +11,8 @@ import xlsxwriter
 
 # from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 # VXNAT
-username = "vam01"
-password = "test01"
+username = "admin"
+password = "admin"
 num_thread = 1000
 
 ap = argparse.ArgumentParser()
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     # output_filename = f"output_{output_timestamp}.csv"
     futures = []
 
-    url = "https://vxnat.vamstack.com/vxnat"
+    url = "http://10.1.1.186/VxPACS/"
     # scrape and crawl
     with ThreadPoolExecutor() as executor:
         for number in range(num_thread):
